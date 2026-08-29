@@ -26,7 +26,7 @@ def main():
 
 create_database_folder()
 initialize_database()
-##main()
+main()
 
 if __name__ == "__main__":
   app.run(port=8080)

@@ -12,7 +12,7 @@ class UserController:
   def register_routes(self):
 
     @self.app.route(self.default_route, methods=['POST'])
-    def create_note():
+    def create_user():
       json = request.get_json()
       user_dto = UserDto(json.get("email"), json.get("password"))
       return self.create_user_service.create_user(user_dto)

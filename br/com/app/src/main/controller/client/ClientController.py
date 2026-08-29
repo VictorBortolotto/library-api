@@ -12,7 +12,7 @@ class ClientController:
   def register_routes(self):
 
     @self.app.route(self.default_route, methods=['POST'])
-    def create_note():
+    def create_client():
       json = request.get_json()
       client_dto = CreateClientDto(
         json.get("user_id"), 
