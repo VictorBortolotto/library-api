@@ -12,3 +12,4 @@ class Client:
   city: str
   neighborhood: str
   country: str
+  is_active: bool

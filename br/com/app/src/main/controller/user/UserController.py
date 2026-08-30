@@ -1,5 +1,5 @@
 from flask import request
-from domain.dto.user import UserDto
+from domain.dto.user.UserDto import UserDto
 from service.user.CreateUserService import CreateUserService
 
 class UserController:
