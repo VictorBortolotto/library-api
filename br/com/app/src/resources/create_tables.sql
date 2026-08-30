@@ -3,12 +3,12 @@ create table if not exists user(
   email varchar(255) not null,
   password varchar(255) not null,
   creation_date datetime not null,
-  is_active integer default 0,
+  is_active integer default 1,
   delete_date datetime null
 );
 
 create table if not exists client(
-  id int primary key,
+  id integer primary key,
   user_id integer references user(id),
   name varchar(255) not null,
   phone varchar(255) not null,
@@ -16,7 +16,8 @@ create table if not exists client(
   zip_code varchar(255) not null,
   city varchar(255) not null,
   neighborhood varchar(255) not null,
-  country varchar(255) not null
+  country varchar(255) not null,
+  is_active integer default 1
 );
 
 create table if not exists book(

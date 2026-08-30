@@ -1,6 +1,7 @@
 from flask import Flask
 from controller.client.ClientController import ClientController
 from controller.user.UserController import UserController
+from controller.book.BookController import BookController
 from database.Database import Database
 from flask_cors import CORS
 from utils.CreateFolderDatabase import CreateFolderDatabase
@@ -23,6 +24,7 @@ def initialize_database():
 def main():
   UserController(app)
   ClientController(app)
+  BookController(app)
 
 create_database_folder()
 initialize_database()

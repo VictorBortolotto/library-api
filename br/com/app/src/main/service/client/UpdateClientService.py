@@ -5,7 +5,7 @@ class UpdateClientService:
   def __init__(self):
     self.client_repository = ClientRepository()
 
-  def create_client(self, id, clientDto):
+  def update_client(self, id, clientDto):
     result = self.client_repository.update_client(id, clientDto)
 
     if result == 0: 
