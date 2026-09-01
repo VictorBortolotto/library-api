@@ -34,5 +34,7 @@ create table if not exists book_loan(
   loan_date datetime not null,
   expeted_return_date datetime null,
   return_date datetime null,
-  status bool not null default 0
+  returned_quantity integer not null default 0,
+  loan_quantity integer not null,
+  is_book_already_returned bool not null default 0
 );

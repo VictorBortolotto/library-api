@@ -17,7 +17,7 @@ class Database:
     sql_path = base_path / "resources" / "create_tables.sql"
 
     with sql_path.open("r", encoding="utf-8") as file:
-        sql_script = file.read()
+      sql_script = file.read()
 
     cursor.executescript(sql_script)
 
@@ -27,60 +27,77 @@ class Database:
   def insert(self, query, query_params):
     conn = self.get_connection()
     cursor = conn.cursor()
+    result = None
 
     try:
       result = cursor.execute(query, query_params).lastrowid
       conn.commit()
-      return result
     except Exception as err:
-      print(err)
+      conn.rollback()
+      raise err
     finally:
       conn.close()
+
+    return result
 
   def delete_by_id(self, query, id):
     conn = self.get_connection()
     cursor = conn.cursor()
+    result = None
 
     try:
       result = cursor.execute(query, id).rowcount
       conn.commit()
-      return result
     except Exception as err:
-      print(err)
+      conn.rollback()
+      raise err
     finally:
       conn.close()
+
+    return result
 
   def find_by_id(self, query, id):
     conn = self.get_connection()
     cursor = conn.cursor()
+    result = None
 
     try:
-      return cursor.execute(query, id).fetchone()
+      result = cursor.execute(query, id).fetchone()
     except Exception as err:
-      print(err)
+      conn.rollback()
+      raise err
     finally:
       conn.close()
+
+    return result
 
   def find_all_by(self, query, query_params):
     conn = self.get_connection()
     cursor = conn.cursor()
+    result = None
 
     try:
-      return cursor.execute(query, query_params).fetchall()
+      result = cursor.execute(query, query_params).fetchall()
     except Exception as err:
-      print(err)
+      conn.rollback()
+      raise err
     finally:
-      conn.close()    
+      conn.close()  
+
+    return result  
 
   def update_by_id(self, query, query_params):
     conn = self.get_connection()
     cursor = conn.cursor()
+    result = None
 
     try:
       result = cursor.execute(query, query_params).rowcount
       conn.commit()
-      return result
     except Exception as err:
-      print(err)
+      conn.rollback()
+      raise err
     finally:
       conn.close()
+
+    return result
