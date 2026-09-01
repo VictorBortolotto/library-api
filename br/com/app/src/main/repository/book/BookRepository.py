@@ -56,3 +56,11 @@ class BookRepository:
     result = self.database.delete_by_id("delete from book where id = ?", (id,))
 
     return result
+
+  def update_book_quantity(self,id,newQuantity):
+    result = self.database.update_by_id("update book set quantity = ? where id = ?", (
+      newQuantity,
+      id
+    ))
+
+    return result

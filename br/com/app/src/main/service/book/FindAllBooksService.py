@@ -1,6 +1,5 @@
 from repository.book.BookRepository import BookRepository
 from utils.ApiResponse import ApiResponse
-from domain.model.Book import Book
 
 class FindAllBooksService:
   def __init__(self):
