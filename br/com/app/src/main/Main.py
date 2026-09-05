@@ -5,7 +5,9 @@ from controller.book.BookController import BookController
 from controller.bookLoan.BookLoanController import BookLoanController
 from database.Database import Database
 from flask_cors import CORS
+from server.Server import serve
 from utils.CreateFolderDatabase import CreateFolderDatabase
+
 app = Flask(__name__)
 
 CORS(app, resources={
@@ -16,21 +18,32 @@ CORS(app, resources={
     }
 })
 
+
 def create_database_folder():
-  CreateFolderDatabase.create_folder()
+    CreateFolderDatabase.create_folder()
+
 
 def initialize_database():
-  Database().create_table()
+    Database().create_table()
+
 
 def main():
-  UserController(app)
-  ClientController(app)
-  BookController(app)
-  BookLoanController(app)
+
+    UserController(app)
+    ClientController(app)
+    BookController(app)
+    BookLoanController(app)
+
+    grpc_server = serve()
+
+    return grpc_server
+
 
 create_database_folder()
 initialize_database()
-main()
+
+grpc_server = main()
+
 
 if __name__ == "__main__":
-  app.run(port=8080)
+    app.run(port=8080)

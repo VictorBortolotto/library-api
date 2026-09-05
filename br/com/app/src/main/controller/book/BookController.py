@@ -5,6 +5,8 @@ from service.book.UpdateBookService import UpdateBookService
 from service.book.DeleteBookService import DeleteBookService
 from service.book.FindAllBooksService import FindAllBooksService
 from service.book.FindBookByIdService import FindBookByIdService
+from domain.exceptions.BookAlreadyExistsException import BookAlreadyExistsException
+from utils.ApiResponse import ApiResponse
 
 class BookController:
   def __init__(self, app):
@@ -22,11 +24,27 @@ class BookController:
 
     @self.app.route(self.default_route, methods=['POST'])
     def create_book():
+
       json = request.get_json()
 
-      bookDto = BookDto(json.get("title"),json.get("description"),json.get("quantity"))
+      bookDto = BookDto(
+        json.get("title"),
+        json.get("description"),
+        json.get("quantity")
+      )
 
-      return self.create_book_service.create_book(bookDto)
+      try:
+        book = self.create_book_service.create_book(bookDto)
+
+        return ApiResponse.created(
+          "Book created with success.",
+          book
+        )
+
+      except BookAlreadyExistsException:
+        return ApiResponse.conflict(
+          "Book already exists."
+        )
 
     @self.app.route(self.default_route + "/<id>", methods=['PUT'])
     def update_book(id):
