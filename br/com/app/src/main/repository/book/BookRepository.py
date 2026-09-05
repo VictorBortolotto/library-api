@@ -35,7 +35,7 @@ class BookRepository:
     return Book(id,title,description,quantity)
   
   def find_book_by_title(self, title):
-    result = self.database.find_by_id("select count(title) from book where id = ?", (title,))
+    result = self.database.find_by_id("select count(title) from book where title = ?", (title,))
 
     return result[0]
 
