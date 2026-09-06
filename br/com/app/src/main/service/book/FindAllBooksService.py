@@ -1,5 +1,5 @@
 from repository.book.BookRepository import BookRepository
-from utils.ApiResponse import ApiResponse
+from domain.exceptions.NotFoundException import NotFoundException
 
 class FindAllBooksService:
   def __init__(self):
@@ -9,6 +9,6 @@ class FindAllBooksService:
     books = self.book_repository.find_all_books()
 
     if books is None or books == []:
-      return ApiResponse.not_found("Books not found.")
+      raise NotFoundException()
 
-    return ApiResponse.ok("", books)
+    return books

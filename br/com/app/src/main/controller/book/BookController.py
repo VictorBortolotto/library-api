@@ -5,7 +5,8 @@ from service.book.UpdateBookService import UpdateBookService
 from service.book.DeleteBookService import DeleteBookService
 from service.book.FindAllBooksService import FindAllBooksService
 from service.book.FindBookByIdService import FindBookByIdService
-from domain.exceptions.BookAlreadyExistsException import BookAlreadyExistsException
+from domain.exceptions.ConflictException import ConflictException
+from domain.exceptions.NotFoundException import NotFoundException
 from utils.ApiResponse import ApiResponse
 
 class BookController:
@@ -41,7 +42,7 @@ class BookController:
           book
         )
 
-      except BookAlreadyExistsException:
+      except ConflictException:
         return ApiResponse.conflict(
           "Book already exists."
         )
@@ -52,16 +53,68 @@ class BookController:
 
       bookDto = BookDto(json.get("title"),json.get("description"),json.get("quantity"))
 
-      return self.update_book_service.update_book(id, bookDto)
+      try:
+        book = self.update_book_service.update_book(id, bookDto)
+
+        return ApiResponse.created(
+          "Book created with success.",
+          book
+        )
+
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "Book not found."
+        )
+      
+      except Exception:
+        return ApiResponse.bad_request(
+          "Error to update book."
+        )
+
     
     @self.app.route(self.default_route + "/<id>", methods=['GET'])
     def find_book_by_id(id):
-      return self.find_book_by_id_service.find_book_by_id(id)
+      try:
+        book = self.find_book_by_id_service.find_book_by_id(id)
+
+        return ApiResponse.ok(
+          "",
+          book
+        )
+
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "Book not found."
+        )
     
     @self.app.route(self.default_route, methods=['GET'])
     def find_all_books():
-      return self.find_all_books_service.find_all_books()
+      try:
+        books = self.find_all_books_service.find_all_books()
+
+        return ApiResponse.ok(
+          "",
+          books
+        )
+    
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "Books not found."
+        )
 
     @self.app.route(self.default_route + "/<id>", methods=['DELETE'])
     def delete_book(id):
-      return self.delete_book_service.delete_book(id)
+      try:
+        self.delete_book_service.delete_book(id)
+
+        return ApiResponse.ok("")
+    
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "Book not found."
+        )
+      
+      except Exception:
+        return ApiResponse.not_found(
+          "Error to delete book."
+        )
