@@ -1,5 +1,5 @@
 from repository.book.BookRepository import BookRepository
-from utils.ApiResponse import ApiResponse
+from domain.exceptions.NotFoundException import NotFoundException
 
 class FindBookByIdService:
   def __init__(self):
@@ -9,6 +9,6 @@ class FindBookByIdService:
     book = self.book_repository.find_book_by_id(id)
 
     if book is None:
-      return ApiResponse.not_found("Book not found.")
+      raise NotFoundException()
 
-    return ApiResponse.ok("", book)
+    return book

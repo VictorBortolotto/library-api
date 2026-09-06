@@ -1,5 +1,5 @@
 from repository.book.BookRepository import BookRepository
-from domain.exceptions.BookAlreadyExistsException import BookAlreadyExistsException
+from domain.exceptions.ConflictException import ConflictException
 from domain.model.Book import Book
 
 class CreateBookService:
@@ -11,7 +11,7 @@ class CreateBookService:
     book_exists = self.book_repository.find_book_by_title(bookDto.title)
 
     if book_exists > 0:
-      raise BookAlreadyExistsException()
+      raise ConflictException()
 
     result = self.book_repository.create_book(bookDto)
 
