@@ -20,9 +20,10 @@ class UserGrpcService(user_pb2_grpc.UserServiceServicer):
 
     try:
 
-      self.create_user_service.create_user(userDto)
+      user = self.create_user_service.create_user(userDto)
 
       return user_pb2.UserResponse(
+        user_id=user.user_id,
         message="User created with success."
       )
 
@@ -32,3 +33,6 @@ class UserGrpcService(user_pb2_grpc.UserServiceServicer):
       context.set_details("User already exists.")
 
       return user_pb2.UserResponse()
+
+  def ValidadeUser(self, request, context):
+    return super().ValidadeUser(request, context)

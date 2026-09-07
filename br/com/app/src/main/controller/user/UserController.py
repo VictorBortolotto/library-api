@@ -22,7 +22,7 @@ class UserController:
 
         return ApiResponse.created(
           "User created with success.",
-          result
+          result.user_id
         )
       except ConflictException:
         return ApiResponse.conflict(

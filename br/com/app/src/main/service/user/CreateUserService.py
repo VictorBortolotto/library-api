@@ -1,5 +1,5 @@
 from repository.user.UserRepository import UserRepository
-from utils.ApiResponse import ApiResponse
+from domain.dto.user.UserResponseDto import UserResponseDto
 from domain.exceptions.ConflictException import ConflictException
 
 class CreateUserService:
@@ -7,7 +7,7 @@ class CreateUserService:
     self.user_repository = UserRepository()
 
   def create_user(self, userDto):
-    result = self.user_repository.find_user_by_id(userDto.email)
+    result = self.user_repository.find_user_by_email(userDto.email)
 
     if result > 0:
       raise ConflictException()
@@ -17,5 +17,5 @@ class CreateUserService:
     if result == 0:
       raise Exception()
 
-    return result
+    return UserResponseDto(result)
 
