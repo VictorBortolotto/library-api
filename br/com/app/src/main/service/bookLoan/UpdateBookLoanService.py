@@ -1,6 +1,7 @@
 from repository.book.BookRepository import BookRepository
 from repository.bookLoan.BookLoanRepository import BookLoanRepository
-from utils.ApiResponse import ApiResponse
+from domain.exceptions.NotFoundException import NotFoundException
+from domain.exceptions.ConflictException import ConflictException
 
 class UpdateBookLoanService:
   def __init__(self):
@@ -9,14 +10,10 @@ class UpdateBookLoanService:
 
   def update_book_loan_service(self,id,updateBookLoanRequest):
     book = self.book_repository.find_book_by_id(updateBookLoanRequest.book_id)
-
-    if book is None:
-      return ApiResponse.not_found("Book not found.")
-
     bookLoan = self.book_loan_repository.find_book_loan_by_id(id)
 
-    if bookLoan is None:
-      return ApiResponse.not_found("Loan not found.")
+    if book is None or bookLoan is None:
+      raise NotFoundException()
 
     returned_quantity = bookLoan.loan_quantity - updateBookLoanRequest.returned_quantity
     if returned_quantity > 0 and updateBookLoanRequest.is_book_already_returned:
@@ -26,7 +23,7 @@ class UpdateBookLoanService:
       updateBookLoanRequest.returned_quantity = bookLoan.returned_quantity + updateBookLoanRequest.returned_quantity
 
     if bookLoan.loan_quantity < updateBookLoanRequest.returned_quantity:
-      return ApiResponse.conflict("The quantity of returned books is greater than the quantity of rented books.")
+      raise ConflictException()
 
     if bookLoan.loan_quantity != bookLoan.returned_quantity:
       newQuantity = book.quantity + updateBookLoanRequest.returned_quantity
@@ -35,6 +32,6 @@ class UpdateBookLoanService:
     result = self.book_loan_repository.update_return_date(id,updateBookLoanRequest)
 
     if result == 0: 
-      return ApiResponse.bad_request("Error to update book loan data.")
+      raise Exception()
 
-    return ApiResponse.ok("Book returned successfully.")
+    return result

@@ -1,5 +1,6 @@
 from repository.bookLoan.BookLoanRepository import BookLoanRepository
 from utils.ApiResponse import ApiResponse
+from domain.exceptions.NotFoundException import NotFoundException
 
 class FindBookLoanService:
   def __init__(self):
@@ -9,6 +10,6 @@ class FindBookLoanService:
     bookLoan = self.book_loan_repository.find_book_loan_by_id(id)
 
     if bookLoan is None:
-      return ApiResponse.not_found("Loan not found.")
+      raise NotFoundException()
 
-    return ApiResponse.ok("", bookLoan)
+    return bookLoan
