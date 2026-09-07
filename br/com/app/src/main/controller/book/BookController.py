@@ -67,7 +67,7 @@ class BookController:
         )
       
       except Exception:
-        return ApiResponse.bad_request(
+        return ApiResponse.internal_server_error(
           "Error to update book."
         )
 
@@ -115,6 +115,6 @@ class BookController:
         )
       
       except Exception:
-        return ApiResponse.not_found(
+        return ApiResponse.internal_server_error(
           "Error to delete book."
         )

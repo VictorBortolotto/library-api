@@ -15,6 +15,10 @@ class ClientRepository:
 
     return Client(id,user_id,name,phone,address,zip_code,city,neighborhood,country,is_active)
 
+  def find_client_by_user_id(self, id):
+    result = self.database.find_by_id("select count(id) from client where user_id = ?", (id,))
+    return result[0]
+
   def create_client(self, client):
     result = self.database.insert("insert into client (user_id,name,phone,address,zip_code,city,neighborhood,country,is_active) values (?,?,?,?,?,?,?,?,?)", (
       client.user_id,
@@ -45,4 +49,4 @@ class ClientRepository:
     return result
 
   def update_client_is_activate(self,id):
-    return self.database.update_by_id("update client set is_active = 0 where id = ?", (id))
+    return self.database.update_by_id("update client set is_active = 0 where id = ?", (id,))

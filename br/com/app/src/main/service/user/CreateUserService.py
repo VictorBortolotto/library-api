@@ -1,5 +1,6 @@
 from repository.user.UserRepository import UserRepository
 from utils.ApiResponse import ApiResponse
+from domain.exceptions.ConflictException import ConflictException
 
 class CreateUserService:
   def __init__(self):
@@ -9,12 +10,12 @@ class CreateUserService:
     result = self.user_repository.find_user_by_id(userDto.email)
 
     if result > 0:
-      return ApiResponse.conflict("User already exists.")
+      raise ConflictException()
 
     result = self.user_repository.create_user(userDto)
 
     if result == 0:
-      return ApiResponse.bad_request("Error to create user.")
+      raise Exception()
 
-    return ApiResponse.ok("User created with success.")
+    return result
 
