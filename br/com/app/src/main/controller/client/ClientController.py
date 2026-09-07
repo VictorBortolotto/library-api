@@ -5,6 +5,10 @@ from service.client.CreateClientService import CreateClientService
 from service.client.UpdateClientService import UpdateClientService
 from service.client.DeactivateClientService import DeactivateClientService
 
+from domain.exceptions.ConflictException import ConflictException
+from domain.exceptions.NotFoundException import NotFoundException
+from utils.ApiResponse import ApiResponse
+
 class ClientController:
   def __init__(self, app):
     self.app = app
@@ -29,8 +33,24 @@ class ClientController:
         json.get("neighborhood"),
         json.get("country")
       )
+
+      try:
+        client = self.create_client_service.create_client(client_dto)
+
+        return ApiResponse.created(
+          "Client created with success.",
+          client
+        )
+
+      except ConflictException:
+        return ApiResponse.conflict(
+          "Client already exists with this user."
+        )
       
-      return self.create_client_service.create_client(client_dto)
+      except Exception:
+        return ApiResponse.internal_server_error(
+          "Error to create client."
+        )
 
     @self.app.route(self.default_route + "/<id>", methods=['PUT'])
     def update_client(id):
@@ -44,9 +64,40 @@ class ClientController:
         json.get("neighborhood"),
         json.get("country")
       )
+
+      try:
+        client = self.update_client_service.update_client(id, client_dto)
+
+        return ApiResponse.ok(
+          "Client updated with success.",
+          client
+        )
+
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "Client not found."
+        )
       
-      return self.update_client_service.update_client(id, client_dto)
+      except Exception:
+        return ApiResponse.internal_server_error(
+          "Error to update client."
+        )
 
     @self.app.route(self.default_route + "/deactivate/<id>", methods=['PATCH'])
     def deactivate_client(id):
-      return self.deactivate_client_service.deactivate_client(id)
+      try:
+        self.deactivate_client_service.deactivate_client(id)
+
+        return ApiResponse.ok(
+          "Client updated with success."
+        )
+
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "Client not found."
+        )
+      
+      except Exception:
+        return ApiResponse.internal_server_error(
+          "Error to update client."
+        )
