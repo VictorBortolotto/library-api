@@ -3,6 +3,9 @@ from repository.bookLoan.BookLoanRepository import BookLoanRepository
 from utils.ApiResponse import ApiResponse
 from domain.dto.bookLoan.BookLoanResponseDto import BookLoanResponseDto
 
+from domain.exceptions.NotFoundException import NotFoundException
+from domain.exceptions.InsufficientQuantityException import InsufficientQuantityException
+
 class CreateBookLoanService:
   def __init__(self):
     self.book_repository = BookRepository()
@@ -12,10 +15,10 @@ class CreateBookLoanService:
     book = self.book_repository.find_book_by_id(bookLoanDto.book_id)
 
     if book is None:
-      return ApiResponse.not_found("Book not found.")
+      raise NotFoundException()
 
     if book.quantity < bookLoanDto.loan_quantity or book.quantity == 0:
-      return ApiResponse.conflict("Insufficient copies available for loan.")
+      raise InsufficientQuantityException()
 
     result = self.book_loan_repository.create_loan(bookLoanDto)
 
@@ -24,9 +27,9 @@ class CreateBookLoanService:
     updateResult = self.book_repository.update_book_quantity(book.id, newBookQuantity)
 
     if updateResult == 0:
-      return ApiResponse.bad_request("Error to update book quantity.")
+      raise Exception()
 
-    bookLoanResposneDto = BookLoanResponseDto(
+    return BookLoanResponseDto(
       result, 
       bookLoanDto.book_id, 
       bookLoanDto.client_id, 
@@ -35,6 +38,5 @@ class CreateBookLoanService:
       bookLoanDto.expeted_return_date
     )
 
-    return ApiResponse.created("Book loan confirmed.", bookLoanResposneDto)
 
     

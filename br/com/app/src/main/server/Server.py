@@ -4,9 +4,11 @@ import grpc
 from generated import book_pb2_grpc
 from generated import user_pb2_grpc
 from generated import client_pb2_grpc
+from generated import book_loan_pb2_grpc
 from controller.grpc.BookGrpcService import BookGrpcService
 from controller.grpc.UserGrpcService import UserGrpcService
 from controller.grpc.ClientGrpcService import ClientGrpcService
+from controller.grpc.BookLoanGrpcService import BookLoanGrpcService
 
 def serve():
 
@@ -26,6 +28,11 @@ def serve():
 
     client_pb2_grpc.add_ClientServiceServicer_to_server(
         ClientGrpcService(),
+        server
+    )
+
+    book_loan_pb2_grpc.add_BookLoanServiceServicer_to_server(
+        BookLoanGrpcService(),
         server
     )
 
