@@ -1,4 +1,8 @@
 from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
+from argon2.exceptions import VerificationError
+from argon2.exceptions import InvalidHashError
+from domain.exceptions.UnauthorizedException import UnauthorizedException
 
 class HashUtils:
 
@@ -9,5 +13,12 @@ class HashUtils:
     return self.ph.hash(text)
 
   def verify_hash(self, text, hash_text):
-    return self.ph.verify(text, hash_text)
-    
+    try:
+      return self.ph.verify(hash_text, text)
+    except VerifyMismatchError:
+      raise UnauthorizedException()
+    except InvalidHashError:
+      raise UnauthorizedException()
+    except VerificationError: 
+      raise UnauthorizedException()
+

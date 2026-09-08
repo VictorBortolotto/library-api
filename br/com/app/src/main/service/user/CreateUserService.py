@@ -9,7 +9,7 @@ class CreateUserService:
   def create_user(self, userDto):
     result = self.user_repository.find_user_by_email(userDto.email)
 
-    if result > 0:
+    if result is not None:
       raise ConflictException()
 
     result = self.user_repository.create_user(userDto)

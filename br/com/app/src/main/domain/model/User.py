@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class UserLoginRequest:
+class User:
   id: int
   email: str
   password: str

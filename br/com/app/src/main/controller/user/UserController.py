@@ -1,13 +1,17 @@
 from flask import request
 from domain.dto.user.UserDto import UserDto
 from service.user.CreateUserService import CreateUserService
+from service.user.UserLoginService import UserLoginService
 from domain.exceptions.ConflictException import ConflictException
 from utils.ApiResponse import ApiResponse
+from domain.exceptions.NotFoundException import NotFoundException
+from domain.exceptions.UnauthorizedException import UnauthorizedException
 
 class UserController:
   def __init__(self, app):
     self.app = app
     self.create_user_service = CreateUserService()
+    self.user_login_service = UserLoginService()
     self.default_route = "/user"
     self.register_routes()
 
@@ -27,4 +31,24 @@ class UserController:
       except ConflictException:
         return ApiResponse.conflict(
           "User already exists."
+        )
+      
+    @self.app.route(self.default_route + "/login", methods=['POST'])
+    def login():
+      json = request.get_json()
+      user_dto = UserDto(json.get("id"), json.get("email"), json.get("password"))
+      try:
+        result = self.user_login_service.login(user_dto)
+
+        return ApiResponse.ok(
+          "",
+          result
+        )
+      except NotFoundException:
+        return ApiResponse.not_found(
+          "User not found."
+        )
+      except UnauthorizedException:
+        return ApiResponse.conflict(
+          "Wrong email or password."
         )
