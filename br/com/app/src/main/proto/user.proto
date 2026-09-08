@@ -5,6 +5,7 @@ package user;
 service UserService {
 
   rpc CreateUser(UserRequest) returns (UserResponse);
+  rpc ValidateUser(UserRequest) returns (UserLoginResponse);
 
 }
 
@@ -14,5 +15,11 @@ message UserRequest {
 }
 
 message UserResponse {
-  string message = 1;
+  int32 user_id = 1;
+  string message = 2;
+}
+
+message UserLoginResponse {
+  int32 user_id = 1;
+  bool is_valid_login = 2;
 }
