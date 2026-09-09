@@ -3,6 +3,7 @@ from controller.client.ClientController import ClientController
 from controller.user.UserController import UserController
 from controller.book.BookController import BookController
 from controller.bookLoan.BookLoanController import BookLoanController
+from controller.zipCode.ZipCodeController import ZipCodeController
 from database.Database import Database
 from flask_cors import CORS
 from server.Server import serve
@@ -33,6 +34,7 @@ def main():
     ClientController(app)
     BookController(app)
     BookLoanController(app)
+    ZipCodeController(app)
 
     grpc_server = serve()
 
