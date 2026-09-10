@@ -47,7 +47,7 @@ responses:
             loan_quantity:
               type: integer
               example: 1
-            loan_quantity:
+            is_book_already_returned:
               type: boolean
               example: true
   404:

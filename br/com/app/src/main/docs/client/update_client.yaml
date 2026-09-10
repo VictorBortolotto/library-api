@@ -82,6 +82,9 @@ responses:
             country:
               type: string
               example: Brazil
+            is_active:
+              type: boolean
+              example: true
   404:
     description: Client not found.
     schema:
