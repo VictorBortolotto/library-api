@@ -5,7 +5,8 @@ from service.bookLoan.CreateBookLoanService import CreateBookLoanService
 from service.bookLoan.UpdateBookLoanService import UpdateBookLoanService
 from service.bookLoan.FindAllBookLoanService import FindAllBookLoanService
 from service.bookLoan.FindBookLoanService import FindBookLoanService
-
+from flasgger import swag_from
+import os
 from utils.ApiResponse import ApiResponse
 
 from domain.exceptions.ConflictException import ConflictException
@@ -25,6 +26,7 @@ class BookLoanController:
   def register_routes(self):
   
     @self.app.route(self.default_route, methods=['POST'])
+    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/create_book_loan.yaml'))
     def create_book_loan():
       json = request.get_json()
 
@@ -55,11 +57,12 @@ class BookLoanController:
         )
       
       except Exception:
-        return ApiResponse.conflict(
+        return ApiResponse.internal_server_error(
           "Error to update book quantity."
         )
 
     @self.app.route(self.default_route + "/<id>", methods=['PUT'])
+    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/update_book_loan.yaml'))
     def update_book_loan(id):
       json = request.get_json()
 
@@ -93,6 +96,7 @@ class BookLoanController:
         )
 
     @self.app.route(self.default_route + "/<id>", methods=['GET'])
+    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/find_book_loan_by_id.yaml'))
     def find_book_loan_by_id(id):
       try:
         book_loan = self.find_book_loan_by_id_service.find_book_loan_by_id(id)
@@ -107,6 +111,7 @@ class BookLoanController:
         )
       
     @self.app.route(self.default_route + "/all/<idClient>", methods=['GET'])
+    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/find_all_book_loan_by_id.yaml'))
     def find_all_book_loan(idClient):
       try:
         book_loan_list = self.find_all_book_loan_service.find_all_book_loan_service(idClient)
