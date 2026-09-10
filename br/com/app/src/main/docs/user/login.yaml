@@ -1,0 +1,59 @@
+tags:
+  - User
+
+summary: Create a new user
+
+consumes:
+  - application/json
+
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: test@teste.com.br
+        password:
+          type: string
+          example: 123456
+
+responses:
+  200:
+    description: Login
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            is_valid_login:
+              type: boolean
+              example: false
+  404:
+    description: User not found.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User not found.
+  401:
+    description: Wrong email or password.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Wrong email or password.

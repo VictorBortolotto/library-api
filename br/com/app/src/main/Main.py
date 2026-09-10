@@ -7,6 +7,7 @@ from controller.zipCode.ZipCodeController import ZipCodeController
 from database.Database import Database
 from flask_cors import CORS
 from server.Server import serve
+from config.SwaggerConfig import SwaggerConfig
 from utils.CreateFolderDatabase import CreateFolderDatabase
 
 app = Flask(__name__)
@@ -19,6 +20,7 @@ CORS(app, resources={
     }
 })
 
+swagger = SwaggerConfig().config(app)
 
 def create_database_folder():
     CreateFolderDatabase.create_folder()

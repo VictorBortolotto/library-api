@@ -2,6 +2,8 @@ from flask import request
 from domain.dto.user.UserDto import UserDto
 from service.user.CreateUserService import CreateUserService
 from service.user.UserLoginService import UserLoginService
+from flasgger import swag_from
+import os
 from domain.exceptions.ConflictException import ConflictException
 from utils.ApiResponse import ApiResponse
 from domain.exceptions.NotFoundException import NotFoundException
@@ -18,6 +20,7 @@ class UserController:
   def register_routes(self):
 
     @self.app.route(self.default_route, methods=['POST'])
+    @swag_from(os.path.join(os.getcwd(), 'docs/user/create_user.yaml'))
     def create_user():
       json = request.get_json()
       user_dto = UserDto(json.get("email"), json.get("password"))
@@ -34,6 +37,7 @@ class UserController:
         )
       
     @self.app.route(self.default_route + "/login", methods=['POST'])
+    @swag_from(os.path.join(os.getcwd(), 'docs/user/login.yaml'))
     def login():
       json = request.get_json()
       user_dto = UserDto(json.get("id"), json.get("email"), json.get("password"))

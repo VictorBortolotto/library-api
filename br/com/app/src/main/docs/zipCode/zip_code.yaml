@@ -1,0 +1,72 @@
+tags:
+  - ZipCode
+
+summary: Find Zip Code data
+
+parameters:
+  - name: cep
+    in: path
+    required: true
+    schema:
+      type: integer
+    description: Find Zip Code data
+    
+responses:
+  200:
+    description: Find book by ID.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 
+        data:
+          type: object
+          properties:
+            cep:
+              type: string
+              example: 01001-000
+            logradouro:
+              type: string
+              example: Praça da Sé
+            complemento:
+              type: string
+              example: lado ímpar
+            unidade:
+              type: string
+              example: 
+            bairro:
+              type: string
+              example: Sé
+            localidade:
+              type: string
+              example: São Paulo
+            uf:
+              type: string
+              example: SP
+            estado:
+              type: string
+              example: São Paulo
+            regiao:
+              type: string
+              example: Sudeste
+            ibge:
+              type: string
+              example: 3550308
+            gia:
+              type: string
+              example: 1004
+            ddd:
+              type: string
+              example: 11
+            siafi:
+              type: string
+              example: 7107
+  404:
+    description: Zip code data not found.
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Zip code data not found.
