@@ -79,6 +79,9 @@ responses:
             country:
               type: string
               example: Brazil
+            is_active:
+              type: boolean
+              example: true
   409:
     description: Client already exists with this user.
     schema:
