@@ -1,0 +1,7 @@
+Flask
+Flask-Cors
+requests
+grpcio
+grpcio-tools
+argon2-cffi
+flasgger
