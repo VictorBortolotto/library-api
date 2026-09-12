@@ -26,7 +26,7 @@ class BookLoanController:
   def register_routes(self):
   
     @self.app.route(self.default_route, methods=['POST'])
-    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/create_book_loan.yaml'))
+    @swag_from(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../docs/bookLoan/create_book_loan.yaml')))
     def create_book_loan():
       json = request.get_json()
 
@@ -62,7 +62,7 @@ class BookLoanController:
         )
 
     @self.app.route(self.default_route + "/<id>", methods=['PUT'])
-    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/update_book_loan.yaml'))
+    @swag_from(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../docs/bookLoan/update_book_loan.yaml')))
     def update_book_loan(id):
       json = request.get_json()
 
@@ -96,7 +96,7 @@ class BookLoanController:
         )
 
     @self.app.route(self.default_route + "/<id>", methods=['GET'])
-    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/find_book_loan_by_id.yaml'))
+    @swag_from(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../docs/bookLoan/find_book_loan_by_id.yaml')))
     def find_book_loan_by_id(id):
       try:
         book_loan = self.find_book_loan_by_id_service.find_book_loan_by_id(id)
@@ -111,7 +111,7 @@ class BookLoanController:
         )
       
     @self.app.route(self.default_route + "/all/<idClient>", methods=['GET'])
-    @swag_from(os.path.join(os.getcwd(), 'docs/bookLoan/find_all_book_loan_by_id.yaml'))
+    @swag_from(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../docs/bookLoan/find_all_book_loan_by_id.yaml')))
     def find_all_book_loan(idClient):
       try:
         book_loan_list = self.find_all_book_loan_service.find_all_book_loan_service(idClient)
