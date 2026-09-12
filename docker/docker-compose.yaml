@@ -1,0 +1,22 @@
+services:
+
+  library-api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+
+    container_name: library-api
+
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+
+    volumes:
+      - ../database:/app/database
+
+    networks:
+      - library-network
+
+networks:
+  library-network:
+    external: true
