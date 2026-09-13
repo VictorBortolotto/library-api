@@ -1,7 +1,7 @@
 tags:
-  - Client
+  - BookLoan
 
-summary: Create client
+summary: Return Book
 
 consumes:
   - application/json
