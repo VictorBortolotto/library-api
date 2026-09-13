@@ -6,7 +6,7 @@ O projeto tem como objetivo demonstrar, de forma prática, conceitos de arquitet
 
 > **Nota:** Este projeto possui finalidade **exclusivamente acadêmica e demonstrativa**. As funcionalidades, regras de negócio e decisões de arquitetura foram definidas para atender aos objetivos do MVP e **não representam necessariamente requisitos, regras ou necessidades de um sistema real de gerenciamento de bibliotecas**. O projeto não deve ser considerado uma solução pronta para utilização em ambiente de produção.
 
-Este repositório contém a **Library API**, responsável pela implementação das **regras de negócio**, operações de **CRUD**, comunicação com o **banco de dados** e disponibilização dos serviços **gRPC** utilizados pela API Proxy.
+Este repositório contém a **Library API**, responsável pela implementação das **regras de negócio**, operações de **CRUD**, comunicação com o **banco de dados**, integração com serviços externos e disponibilização dos serviços **gRPC** utilizados pela API Proxy.
 
 ---
 
@@ -19,41 +19,75 @@ A aplicação é composta por duas APIs:
 
 A comunicação entre as duas APIs é realizada utilizando **gRPC**.
 
+A **Library API** também disponibiliza uma interface HTTP e realiza a comunicação com a API externa **ViaCEP** para consulta de informações de endereço a partir de um CEP.
+
 ```text
-                    ┌──────────────────────┐
-                    │       Cliente        │
-                    └──────────┬───────────┘
-                               │
-                               │ HTTP
-                               ▼
-                    ┌──────────────────────┐
-                    │  Library Proxy API   │
-                    │      :8081           │
-                    │                      │
-                    │ • Autenticação       │
-                    │ • JWT                │
-                    │ • Validação          │
-                    │ • Proxy              │
-                    └──────────┬───────────┘
-                               │
-                               │ gRPC
-                               ▼
-                    ┌──────────────────────┐
-                    │     Library API      │
-                    │                      │
-                    │ HTTP: :8080          │
-                    │ gRPC: :50051         │
-                    │                      │
-                    │ • Regras de negócio  │
-                    │ • CRUD               │
-                    │ • Banco de dados     │
-                    │ • Serviços externos  │
-                    └──────────┬───────────┘
-                               │
-                               ▼
-                    ┌──────────────────────┐
-                    │       SQLite         │
-                    └──────────────────────┘
+                         ┌──────────────────────┐
+                         │       Cliente        │
+                         └──────────┬───────────┘
+                                    │
+                                    │ HTTP
+                                    ▼
+                         ┌──────────────────────┐
+                         │  Library Proxy API   │
+                         │       :8081          │
+                         │                      │
+                         │ • Autenticação       │
+                         │ • JWT                │
+                         │ • Validação          │
+                         │ • Proxy              │
+                         └──────────┬───────────┘
+                                    │
+                                    │ gRPC
+                                    ▼
+              ┌─────────────────────────────────────┐
+              │           Library API               │
+              │                                     │
+              │ HTTP: :8080                         │
+              │ gRPC: :50051                        │
+              │                                     │
+              │ • Regras de negócio                 │
+              │ • Operações CRUD                    │
+              │ • Banco de dados                    │
+              │ • Integrações externas              │
+              └──────────────┬──────────────┬───────┘
+                             │              │
+                             │              │ HTTP
+                             │              ▼
+                             │     ┌──────────────────┐
+                             │     │     ViaCEP API   │
+                             │     │                  │
+                             │     │ • Consulta CEP   │
+                             │     │ • Dados endereço │
+                             │     └──────────────────┘
+                             │
+                             ▼
+                    ┌──────────────────┐
+                    │      SQLite      │
+                    │                  │
+                    │ • Persistência   │
+                    │ • Tabelas        │
+                    └──────────────────┘
+```
+
+### Fluxo de comunicação
+
+De forma simplificada, uma requisição realizada pelo cliente segue o seguinte fluxo:
+
+```text
+Cliente
+   │
+   │ HTTP
+   ▼
+Library Proxy API
+   │
+   │ gRPC
+   ▼
+Library API
+   │
+   ├──► SQLite
+   │
+   └──► ViaCEP API
 ```
 
 ---
@@ -87,7 +121,7 @@ A comunicação entre as duas APIs é realizada utilizando **gRPC**.
 ### Integrações
 
 * Comunicação com a **Library Proxy API** utilizando gRPC
-* Consulta de informações de CEP através de serviço externo
+* Consulta de informações de CEP através da **ViaCEP API**
 
 ---
 
@@ -265,6 +299,78 @@ O arquivo do banco de dados é armazenado dentro da estrutura de diretórios da 
 
 ---
 
+# Integração com a ViaCEP API
+
+A **Library API** possui uma integração com a **ViaCEP API**, utilizada para consultar informações de endereço a partir de um CEP.
+
+A integração com o serviço externo é realizada diretamente pela **Library API**.
+
+O fluxo da consulta ocorre da seguinte forma:
+
+```text
+Cliente
+   │
+   │ HTTP
+   ▼
+Library Proxy API
+   │
+   │ gRPC
+   ▼
+Library API
+   │
+   │ HTTP
+   ▼
+ViaCEP API
+   │
+   │ JSON
+   ▼
+Library API
+   │
+   │ gRPC
+   ▼
+Library Proxy API
+   │
+   │ HTTP
+   ▼
+Cliente
+```
+
+A consulta à ViaCEP utiliza o seguinte padrão de endpoint:
+
+```text
+https://viacep.com.br/ws/{cep}/json/
+```
+
+Onde `{cep}` deve ser substituído pelo CEP que deseja consultar.
+
+Por exemplo:
+
+```text
+https://viacep.com.br/ws/88870000/json/
+```
+
+A ViaCEP retorna os dados do endereço em formato **JSON**, que são processados pela Library API.
+
+Entre as informações disponibilizadas pelo serviço estão:
+
+* CEP
+* Logradouro
+* Complemento
+* Bairro
+* Localidade
+* UF
+* Estado
+* Região
+* Código IBGE
+* DDD
+* Código SIAFI
+
+A integração com a ViaCEP foi implementada como parte da demonstração de comunicação com um **serviço externo**, contribuindo para os objetivos acadêmicos do projeto.
+
+> **Observação:** A disponibilidade e os dados retornados pela ViaCEP dependem do serviço externo.
+
+---
+
 # Regeneração dos arquivos gRPC
 
 Os arquivos Python utilizados pelo gRPC são gerados a partir dos arquivos `.proto` localizados em:
@@ -323,17 +429,7 @@ altere para:
 from generated import zip_code_pb2 as zip__code__pb2
 ```
 
-Esse ajuste permite que o arquivo encontre corretamente o módulo `zip_code_pb2` dentro do pacote `generated`.
-
----
-
-# Portas utilizadas
-
-| Serviço           | Protocolo |   Porta |
-| ----------------- | --------- | ------: |
-| Library Proxy API | HTTP      |  `8081` |
-| Library API       | HTTP      |  `8080` |
-| Library API       | gRPC      | `50051` |
+Esse ajuste pode ser necessário para que os arquivos gerados encontrem corretamente os módulos dentro do pacote `generated`.
 
 ---
 
@@ -351,23 +447,38 @@ Através do Swagger é possível visualizar os endpoints disponíveis, seus par�
 
 ---
 
+# Portas utilizadas
+
+| Serviço           | Protocolo |   Porta |
+| ----------------- | --------- | ------: |
+| Library Proxy API | HTTP      |  `8081` |
+| Library API       | HTTP      |  `8080` |
+| Library API       | gRPC      | `50051` |
+
+---
+
 # Observações
 
 * A **Library API** é responsável pelas regras de negócio e persistência dos dados.
 * O banco de dados utilizado é o **SQLite**.
 * O banco e suas tabelas são criados automaticamente durante a inicialização da aplicação.
 * A comunicação com a **Library Proxy API** é realizada através de **gRPC**.
-* A API também realiza integração com serviço externo para consulta de informações de CEP.
+* A **Library API** é responsável pela integração com a **ViaCEP API**.
+* Quando executadas através do Docker Compose, as APIs podem se comunicar utilizando os nomes dos respectivos serviços.
+* Quando executadas localmente, a comunicação deve utilizar `localhost`.
 * A porta HTTP utilizada pela API é `8080`.
 * A porta utilizada pelo servidor gRPC é `50051`.
 * Para utilizar a aplicação completa, a **Library Proxy API** e a **Library API** devem estar disponíveis.
+* Este projeto possui finalidade acadêmica e demonstrativa e não representa necessariamente os requisitos de um sistema real de gerenciamento de bibliotecas.
 
 ---
 
-<h2 align="start">Autor</h2>
+# Autor
 
-<h2 style="border: none">Victor Augusto Campos Bortolotto</h2>
-<img style="width: 100px; height: 100px" src="https://avatars.githubusercontent.com/u/50971139?v=4" alt=""/>
+**Victor Augusto Campos Bortolotto**
 
-[![Linkedin Badge](https://img.shields.io/badge/-LinkedIn-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/victor-augusto-campos-bortolotto/)](https://www.linkedin.com/in/victor-augusto-campos-bortolotto/) 
-[![Gmail Badge](https://img.shields.io/badge/-victorcamposbortolottowork@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:victorcamposbortolottowork@gmail.com)](mailto:victorcamposbortolottowork@gmail.com)
+![Victor Augusto Campos Bortolotto](https://avatars.githubusercontent.com/u/50971139?v=4)
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat-square\&logo=linkedin\&logoColor=white)](https://www.linkedin.com/in/victor-augusto-campos-bortolotto/)
+
+[![Gmail](https://img.shields.io/badge/victorcamposbortolottowork%40gmail.com-c14438?style=flat-square\&logo=gmail\&logoColor=white)](mailto:victorcamposbortolottowork@gmail.com)
