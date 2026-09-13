@@ -1,7 +1,7 @@
 tags:
   - Client
 
-summary: Create client
+summary: Update client
 
 consumes:
   - application/json

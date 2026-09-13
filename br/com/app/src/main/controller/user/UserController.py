@@ -40,7 +40,7 @@ class UserController:
     @swag_from(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../docs/user/login.yaml')))
     def login():
       json = request.get_json()
-      user_dto = UserDto(json.get("id"), json.get("email"), json.get("password"))
+      user_dto = UserDto(json.get("email"), json.get("password"))
       try:
         result = self.user_login_service.login(user_dto)
 
